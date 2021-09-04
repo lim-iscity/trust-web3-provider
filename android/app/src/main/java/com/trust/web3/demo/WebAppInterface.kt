@@ -1,9 +1,7 @@
 package com.trust.web3.demo
 
-import android.content.Context
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.Toast
 import org.json.JSONObject
 
 class WebAppInterface(private val context: WebView) {
@@ -19,6 +17,12 @@ class WebAppInterface(private val context: WebView) {
                 val callback = "window.ethereum.sendResponse($id, [\"$addr\"])"
                 context.post {
                     context.evaluateJavascript(callback) { value ->
+                        println(value)
+                    }
+                }
+                val setAddress = "window.ethereum.setAddress(\"$addr\")"
+                context.post {
+                    context.evaluateJavascript(setAddress) { value ->
                         println(value)
                     }
                 }

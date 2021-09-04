@@ -1,5 +1,6 @@
 package com.trust.web3.demo
 
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.WebView
@@ -19,15 +20,29 @@ class MainActivity : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(true)
         val webview: WebView = findViewById(R.id.webview)
         webview.settings.javaScriptEnabled = true
+        webview.settings.domStorageEnabled = true
         webview.addJavascriptInterface(WebAppInterface(webview), "_tw_")
 
         val webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 println("loaded: ${url}")
+            }
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
                 view?.evaluateJavascript(provderJs, null)
                 view?.evaluateJavascript(initJs, null)
             }
+
+            override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                super.doUpdateVisitedHistory(view, url, isReload)
+                val request  = "window.ethereum"
+                view?.evaluateJavascript(request) { value ->
+                    print("request: $value")
+                }
+            }
+
         }
         webview.webViewClient = webViewClient
         webview.loadUrl("https://js-eth-sign.surge.sh")
